@@ -35,12 +35,12 @@ Instagram.isInstalled(function (err, installed) {
 });
 ```
 
-Share the content of a canvas element or a base64 dataURL __png__ image. The function share accepts a string, corresponding to the canvas element id or the dataURL, an optional caption, and a callback function as parameters:
+Share a image. The function shareImage accepts a mediaPath, an optional caption, and a callback function as parameters:
 
 __API CHANGE NOTE__: [Instagram](http://developers.instagram.com/post/125972775561/removing-pre-filled-captions-from-mobile-sharing) app stopped accepting pre-filled captions on both iOS and Android. As a work-around, the caption is copied to the clipboard. You have to inform your users to paste the caption.
 
 ```javascript
-Instagram.share(canvasIdOrDataUrl, caption, function (err) {
+Instagram.shareImage(mediaPath, caption, function (err) {
     if (err) {
         console.log("not shared");
     } else {
@@ -49,10 +49,12 @@ Instagram.share(canvasIdOrDataUrl, caption, function (err) {
 });
 ```
 
-or:
+Share a video. The function shareVideo accepts a mediaPath, an optional caption, and a callback function as parameters:
+
+__API CHANGE NOTE__: [Instagram](http://developers.instagram.com/post/125972775561/removing-pre-filled-captions-from-mobile-sharing) app stopped accepting pre-filled captions on both iOS and Android. As a work-around, the caption is copied to the clipboard. You have to inform your users to paste the caption.
 
 ```javascript
-Instagram.share(canvasIdOrDataUrl, function (err) {
+Instagram.shareVideo(mediaPath, function (err) {
     if (err) {
         console.log("not shared");
     } else {

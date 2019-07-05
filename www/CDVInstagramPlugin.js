@@ -27,24 +27,6 @@ var exec = require('cordova/exec');
 var hasCheckedInstall,
     isAppInstalled;
 
-function shareDataUrl(dataUrl, caption, callback) {
-  var imageData = dataUrl.replace(/data:image\/(png|jpeg);base64,/, "");
-
-    if (cordova && cordova.plugins && cordova.plugins.clipboard && caption !== '') {
-      console.log("copying caption: ", caption);
-      cordova.plugins.clipboard.copy(caption);
-    }
-
-    exec(
-        function () {
-            callback && callback(null, true);
-        },
-        function (err) {
-            callback && callback(err);
-        }, "Instagram", "share", [imageData, caption]
-    );
-}
-
 var Plugin = {
   // calls to see if the device has the Instagram app
   isInstalled: function (callback) {
@@ -60,44 +42,33 @@ var Plugin = {
       callback && callback(null, false);
     }, "Instagram", "isInstalled", []);
   },
-  share: function () {
-    var data,
-        caption,
-        callback;
-
-    switch(arguments.length) {
-    case 2:
-      data = arguments[0];
-      caption = '';
-      callback = arguments[1];
-      break;
-    case 3:
-      data = arguments[0];
-      caption = arguments[1];
-      callback = arguments[2];
-      break;
-    default:
-    }
-
+  shareImage: function (successCallback, errorCallback, mediaPath, caption) {
     // sanity check
     if (hasCheckedInstall && !isAppInstalled) {
       console.log("oops, Instagram is not installed ... ");
-      return callback && callback("oops, Instagram is not installed ... ");
+      return errorCallback && errorCallback("oops, Instagram is not installed ... ");
     }
 
-    var canvas = document.getElementById(data),
-        magic = "data:image";
+    if (cordova && cordova.plugins && cordova.plugins.clipboard && caption !== '') {
+      console.log("copying caption: ", caption);
+      cordova.plugins.clipboard.copy(caption);
+    }
 
-    if (canvas) {
-      shareDataUrl(canvas.toDataURL(), caption, callback);
+    exec(successCallback, errorCallback, "Instagram", "shareImage", [mediaPath]);
+  },
+  shareVideo: function (successCallback, errorCallback, mediaPath, caption) {
+    // sanity check
+    if (hasCheckedInstall && !isAppInstalled) {
+      console.log("oops, Instagram is not installed ... ");
+      return errorCallback && errorCallback("oops, Instagram is not installed ... ");
     }
-    else if (data.slice(0, magic.length) == magic) {
-      shareDataUrl(data, caption, callback);
+
+    if (cordova && cordova.plugins && cordova.plugins.clipboard && caption !== '') {
+      console.log("copying caption: ", caption);
+      cordova.plugins.clipboard.copy(caption);
     }
-    else
-    {
-      console.log("oops, Instagram image data string has to start with 'data:image'.")
-    }
+
+    exec(successCallback, errorCallback, "Instagram", "shareVideo", [mediaPath]);
   },
   shareAsset: function (successCallback, errorCallback, assetLocalIdentifier) {
       // sanity check

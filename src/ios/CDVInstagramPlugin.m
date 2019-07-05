@@ -48,38 +48,6 @@ static NSString *InstagramId = @"com.burbn.instagram";
     
 }
 
-- (void)share:(CDVInvokedUrlCommand*)command {
-    self.callbackId = command.callbackId;
-    self.toInstagram = FALSE;
-    NSString    *objectAtIndex0 = [command argumentAtIndex:0];
-    NSString    *caption = [command argumentAtIndex:1];
-    
-    CDVPluginResult *result;
-    
-    NSURL *instagramURL = [NSURL URLWithString:@"instagram://app"];
-    if ([[UIApplication sharedApplication] canOpenURL:instagramURL]) {
-        NSLog(@"open in instagram");
-        
-        NSData *imageObj = [[NSData alloc] initWithBase64EncodedString:objectAtIndex0 options:0];
-        NSString *tmpDir = NSTemporaryDirectory();
-        NSString *path = [tmpDir stringByAppendingPathComponent:@"instagram.igo"];
-        
-        [imageObj writeToFile:path atomically:true];
-        
-        self.interactionController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:path]];
-        self.interactionController .UTI = @"com.instagram.exclusivegram";
-        if (caption) {
-            self.interactionController .annotation = @{@"InstagramCaption" : caption};
-        }
-        self.interactionController .delegate = self;
-        [self.interactionController presentOpenInMenuFromRect:CGRectZero inView:self.webView animated:YES];
-        
-    } else {
-        result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageToErrorObject:1];
-        [self.commandDelegate sendPluginResult:result callbackId: self.callbackId];
-    }
-}
-
 - (void)shareAsset:(CDVInvokedUrlCommand*)command {
     self.callbackId = command.callbackId;
     NSString    *localIdentifier = [command argumentAtIndex:0];
