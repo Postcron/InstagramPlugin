@@ -42,7 +42,7 @@ var Plugin = {
       callback && callback(null, false);
     }, "Instagram", "isInstalled", []);
   },
-  shareImage: function (successCallback, errorCallback, mediaPath, caption) {
+  shareImage: function (mediaPath, caption, errorCallback, successCallback) {
     // sanity check
     if (hasCheckedInstall && !isAppInstalled) {
       console.log("oops, Instagram is not installed ... ");
@@ -56,7 +56,7 @@ var Plugin = {
 
     exec(successCallback, errorCallback, "Instagram", "shareImage", [mediaPath]);
   },
-  shareVideo: function (successCallback, errorCallback, mediaPath, caption) {
+  shareVideo: function (mediaPath, caption, errorCallback, successCallback) {
     // sanity check
     if (hasCheckedInstall && !isAppInstalled) {
       console.log("oops, Instagram is not installed ... ");
@@ -70,7 +70,7 @@ var Plugin = {
 
     exec(successCallback, errorCallback, "Instagram", "shareVideo", [mediaPath]);
   },
-  shareAsset: function (successCallback, errorCallback, assetLocalIdentifier, caption) {
+  shareAsset: function (assetLocalIdentifier, caption, errorCallback, successCallback) {
       // sanity check
       if (hasCheckedInstall && !isAppInstalled) {
           console.log("oops, Instagram is not installed ... ");
