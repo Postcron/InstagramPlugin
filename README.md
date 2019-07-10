@@ -54,7 +54,7 @@ Share a video. The function shareVideo accepts a mediaPath, an optional caption,
 __API CHANGE NOTE__: [Instagram](http://developers.instagram.com/post/125972775561/removing-pre-filled-captions-from-mobile-sharing) app stopped accepting pre-filled captions on both iOS and Android. As a work-around, the caption is copied to the clipboard. You have to inform your users to paste the caption.
 
 ```javascript
-Instagram.shareVideo(mediaPath, function (err) {
+Instagram.shareVideo(mediaPath, caption, function (err) {
     if (err) {
         console.log("not shared");
     } else {
@@ -63,14 +63,14 @@ Instagram.shareVideo(mediaPath, function (err) {
 });
 ```
 
-Share library __asset__ image or video. The function shareAsset (iOS only) accepts a string with asset local identifier, and a callback function as parameters:
+Share library __asset__ image or video. The function shareAsset (iOS only) accepts a string with asset local identifier, an optional caption, and a callback function as parameters:
 ```javascript
 var assetLocalIdentifier = "24320B60-1F52-46AC-BE4C-1202F02B9D00/L0/001";
 Instagram.shareAsset(function(result) {
             console.log('Instagram.shareAsset success: ' + result);
         }, function(e) {
             console.log('Instagram.shareAsset error: ' + e);
-        }, assetLocalIdentifier);
+        }, assetLocalIdentifier, caption);
 ```
 You can get a LocalIdentifier by using Photos Framework [Fetching Assets](https://developer.apple.com/library/ios/documentation/Photos/Reference/PHAsset_Class/#//apple_ref/doc/uid/TP40014383-CH1-SW2) API
 
