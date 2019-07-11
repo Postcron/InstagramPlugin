@@ -70,7 +70,7 @@ var Plugin = {
 
     exec(successCallback, errorCallback, "Instagram", "shareVideo", [mediaPath]);
   },
-  shareAsset: function (assetLocalIdentifier, caption, errorCallback, successCallback) {
+  shareAsset: function (successCallback, errorCallback, assetLocalIdentifier, caption) {
       // sanity check
       if (hasCheckedInstall && !isAppInstalled) {
           console.log("oops, Instagram is not installed ... ");
