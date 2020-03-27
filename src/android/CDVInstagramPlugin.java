@@ -1,7 +1,7 @@
 /*
     The MIT License (MIT)
     Copyright (c) 2013 Vlad Stirbu
-    
+
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
     "Software"), to deal in the Software without restriction, including
@@ -9,10 +9,10 @@
     distribute, sublicense, and/or sell copies of the Software, and to
     permit persons to whom the Software is furnished to do so, subject to
     the following conditions:
-    
+
     The above copyright notice and this permission notice shall be
     included in all copies or substantial portions of the Software.
-    
+
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
     MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -41,11 +41,13 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.ClipData;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
 import android.support.v4.content.FileProvider;
+import android.provider.MediaStore;
 
 @TargetApi(Build.VERSION_CODES.FROYO)
 public class CDVInstagramPlugin extends CordovaPlugin {
@@ -58,12 +60,12 @@ public class CDVInstagramPlugin extends CordovaPlugin {
     };
 
     CallbackContext cbContext;
-    
+
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        
+
         this.cbContext = callbackContext;
-        
+
         if (action.equals("shareImage")) {
             String imageString = args.getString(0);
 
@@ -87,7 +89,7 @@ public class CDVInstagramPlugin extends CordovaPlugin {
         }
         return false;
     }
-    
+
     private void isInstalled() {
         try {
             this.webView.getContext().getPackageManager().getApplicationInfo("com.instagram.android", 0);
@@ -140,29 +142,46 @@ public class CDVInstagramPlugin extends CordovaPlugin {
             File file = new File(mediaPath);
 
             if (Build.VERSION.SDK_INT < 26) {
-                // Handle the file uri with pre Oreo method    
+                // Handle the file uri with pre Oreo method
                 shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
             } else {
-                // Handle the file URI using Android Oreo file provider
-                FileProvider FileProvider = new FileProvider();
 
-                Uri photoURI = FileProvider.getUriForFile(
-                        this.cordova.getActivity().getApplicationContext(),
-                        this.cordova.getActivity().getPackageName() + ".provider",
-                        file);
+                try
+                {
+                    // Save image to gallery
+                    String savedImageURL = MediaStore.Images.Media.insertImage(
+                            this.cordova.getActivity().getApplicationContext().getContentResolver(),
+                            mediaPath,
+                            "Postcron",
+                            "Postcron Image sharing to IG"
+                    );
 
-                shareIntent.putExtra(Intent.EXTRA_STREAM, photoURI);
-                shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    // Parse the gallery image url to uri
+                    Uri savedImageURI = Uri.parse(savedImageURL);
+
+                    Log.v("Instagram", mediaPath);
+                    Log.v("Instagram", savedImageURI.toString());
+
+                    ClipData clipData = ClipData.newRawUri("Image", savedImageURI);
+
+                    shareIntent.setClipData(clipData);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, savedImageURI);
+                    shareIntent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                }
+                catch (FileNotFoundException ex)
+                {
+                    this.cbContext.error("FileNotFoundException");
+                }
             }
 
             shareIntent.setPackage("com.instagram.android");
 
-            this.cordova.startActivityForResult((CordovaPlugin) this, Intent.createChooser(shareIntent, "Share to"), 12345);   
+            this.cordova.startActivityForResult((CordovaPlugin) this, Intent.createChooser(shareIntent, "Share to"), 12345);
         } else {
             this.cbContext.error("Expected one non-empty string argument.");
         }
     }
-    
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
