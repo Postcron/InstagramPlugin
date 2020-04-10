@@ -46,6 +46,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
 import android.util.Log;
+import java.util.Calendar;
 import android.support.v4.content.FileProvider;
 import android.provider.MediaStore;
 
@@ -148,19 +149,18 @@ public class CDVInstagramPlugin extends CordovaPlugin {
 
                 try
                 {
+                    String currentTime = Calendar.getInstance().getTime().toString();
+
                     // Save image to gallery
                     String savedImageURL = MediaStore.Images.Media.insertImage(
                             this.cordova.getActivity().getApplicationContext().getContentResolver(),
                             mediaPath,
-                            "Postcron",
+                            "Postcron" + " - " + currentTime,
                             "Postcron Image sharing to IG"
                     );
 
                     // Parse the gallery image url to uri
                     Uri savedImageURI = Uri.parse(savedImageURL);
-
-                    Log.v("Instagram", mediaPath);
-                    Log.v("Instagram", savedImageURI.toString());
 
                     ClipData clipData = ClipData.newRawUri("Image", savedImageURI);
 
